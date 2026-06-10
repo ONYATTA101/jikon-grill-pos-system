@@ -1,0 +1,14 @@
+.env
+.env.*
+.launch-credentials.txt
+INTERVIEW_REVIEW_ACCESS.txt
+.pos-server.pid
+.vercel
+.next
+node_modules
+backups
+logs
+out
+coverage
+JIKON-GRILL-POS-DEMO-SAFE.zip
+PROGRAM DOCUMANTATION

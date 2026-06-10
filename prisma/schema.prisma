@@ -1,0 +1,403 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum Station {
+  NONE
+  KITCHEN
+  BAR
+}
+
+enum StockTrackingType {
+  NONE
+  DIRECT
+  RECIPE
+}
+
+enum OrderType {
+  TABLE
+  TAKEAWAY
+  DELIVERY
+}
+
+enum OrderStatus {
+  OPEN
+  SENT_TO_KITCHEN
+  SENT_TO_BAR
+  READY
+  SERVED
+  PAID
+  VOIDED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  MPESA
+  CARD
+  BANK
+  SPLIT
+}
+
+enum PaymentStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  REFUNDED
+  VOIDED
+}
+
+enum StockMovementType {
+  PURCHASE
+  SALE_DEDUCTION
+  WASTAGE
+  ADJUSTMENT
+  TRANSFER
+  RETURN
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ExpenseCategory {
+  FOOD
+  BAR
+  UTILITIES
+  PAYROLL
+  RENT
+  OTHER
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  permissions String[]
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("roles")
+}
+
+model User {
+  id                String               @id @default(cuid())
+  name              String
+  email             String               @unique
+  phone             String?
+  passwordHash      String
+  status            UserStatus           @default(ACTIVE)
+  roleId            String
+  role              Role                 @relation(fields: [roleId], references: [id])
+  cashierSales      Sale[]               @relation("CashierSales")
+  waiterOrders      Order[]              @relation("WaiterOrders")
+  stockMovements    StockMovement[]      @relation("StockMovedBy")
+  expensesCreated   Expense[]            @relation("ExpensesCreated")
+  refundsRequested  Refund[]             @relation("RefundRequestedBy")
+  refundsApproved   Refund[]             @relation("RefundApprovedBy")
+  discountsApproved Discount[]           @relation("DiscountApprovedBy")
+  closingsCreated   DailyClosingReport[] @relation("ClosingCreatedBy")
+  auditLogs         AuditLog[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@map("users")
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  sortOrder Int       @default(0)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+model Product {
+  id                String            @id @default(cuid())
+  name              String
+  sku               String            @unique
+  categoryId        String
+  category          Category          @relation(fields: [categoryId], references: [id])
+  station           Station           @default(NONE)
+  sellingPrice      Decimal           @db.Decimal(10, 2)
+  costPrice         Decimal           @db.Decimal(10, 2)
+  stockTrackingType StockTrackingType @default(NONE)
+  isActive          Boolean           @default(true)
+  recipeItems       Recipe[]
+  saleItems         SaleItem[]
+  orderItems        OrderItem[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@map("products")
+}
+
+model InventoryItem {
+  id              String          @id @default(cuid())
+  name            String          @unique
+  unit            String
+  currentStock    Decimal         @db.Decimal(12, 3)
+  minimumStock    Decimal         @db.Decimal(12, 3)
+  costPerUnit     Decimal         @db.Decimal(10, 2)
+  recipeItems     Recipe[]
+  stockMovements  StockMovement[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("inventory_items")
+}
+
+model Recipe {
+  id              String        @id @default(cuid())
+  productId       String
+  product         Product       @relation(fields: [productId], references: [id])
+  inventoryItemId String
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
+  quantity        Decimal       @db.Decimal(12, 3)
+  unit            String
+
+  @@unique([productId, inventoryItemId])
+  @@map("recipes")
+}
+
+model RestaurantTable {
+  id        String   @id @default(cuid())
+  number    Int      @unique
+  seats     Int
+  status    String   @default("available")
+  orders    Order[]
+  sales     Sale[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tables")
+}
+
+model Order {
+  id        String          @id @default(cuid())
+  orderNo   String          @unique
+  type      OrderType       @default(TABLE)
+  status    OrderStatus     @default(OPEN)
+  tableId   String?
+  table     RestaurantTable? @relation(fields: [tableId], references: [id])
+  waiterId  String?
+  waiter    User?           @relation("WaiterOrders", fields: [waiterId], references: [id])
+  items     OrderItem[]
+  sale      Sale?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String      @id @default(cuid())
+  orderId   String
+  order     Order       @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product     @relation(fields: [productId], references: [id])
+  quantity  Decimal     @db.Decimal(10, 2)
+  note      String?
+  status    OrderStatus @default(OPEN)
+  createdAt DateTime    @default(now())
+
+  @@map("order_items")
+}
+
+model Sale {
+  id             String          @id @default(cuid())
+  receiptNumber  String          @unique
+  orderId        String?         @unique
+  order          Order?          @relation(fields: [orderId], references: [id])
+  tableId        String?
+  table          RestaurantTable? @relation(fields: [tableId], references: [id])
+  cashierId      String?
+  cashier        User?           @relation("CashierSales", fields: [cashierId], references: [id])
+  subtotal       Decimal         @db.Decimal(10, 2)
+  discount       Decimal         @default(0) @db.Decimal(10, 2)
+  tax            Decimal         @default(0) @db.Decimal(10, 2)
+  serviceCharge  Decimal         @default(0) @db.Decimal(10, 2)
+  total          Decimal         @db.Decimal(10, 2)
+  paymentStatus  PaymentStatus   @default(UNPAID)
+  saleItems      SaleItem[]
+  payments       Payment[]
+  stockMovements StockMovement[]
+  refunds        Refund[]
+  discounts      Discount[]
+  voidedAt       DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@map("sales")
+}
+
+model SaleItem {
+  id          String  @id @default(cuid())
+  saleId      String
+  sale        Sale    @relation(fields: [saleId], references: [id])
+  productId   String
+  product     Product @relation(fields: [productId], references: [id])
+  productName String
+  quantity    Decimal @db.Decimal(10, 2)
+  unitPrice   Decimal @db.Decimal(10, 2)
+  total       Decimal @db.Decimal(10, 2)
+
+  @@map("sale_items")
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  saleId    String
+  sale      Sale          @relation(fields: [saleId], references: [id])
+  method    PaymentMethod
+  amount    Decimal       @db.Decimal(10, 2)
+  reference String?
+  createdAt DateTime      @default(now())
+
+  @@map("payments")
+}
+
+model StockMovement {
+  id              String            @id @default(cuid())
+  inventoryItemId String
+  inventoryItem   InventoryItem     @relation(fields: [inventoryItemId], references: [id])
+  movementType    StockMovementType
+  quantity        Decimal           @db.Decimal(12, 3)
+  reason          String
+  saleId          String?
+  sale            Sale?             @relation(fields: [saleId], references: [id])
+  supplierId      String?
+  supplier        Supplier?         @relation(fields: [supplierId], references: [id])
+  createdById     String?
+  createdBy       User?             @relation("StockMovedBy", fields: [createdById], references: [id])
+  createdAt       DateTime          @default(now())
+
+  @@map("stock_movements")
+}
+
+model Supplier {
+  id             String          @id @default(cuid())
+  name           String
+  contactPerson  String?
+  phone          String?
+  email          String?
+  isActive       Boolean         @default(true)
+  stockMovements StockMovement[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@map("suppliers")
+}
+
+model Expense {
+  id          String          @id @default(cuid())
+  title       String
+  category    ExpenseCategory @default(OTHER)
+  amount      Decimal         @db.Decimal(10, 2)
+  paymentMode PaymentMethod
+  notes       String?
+  createdById String?
+  createdBy   User?           @relation("ExpensesCreated", fields: [createdById], references: [id])
+  createdAt   DateTime        @default(now())
+
+  @@map("expenses")
+}
+
+model Refund {
+  id            String         @id @default(cuid())
+  saleId        String
+  sale          Sale           @relation(fields: [saleId], references: [id])
+  amount        Decimal        @db.Decimal(10, 2)
+  reason        String
+  status        ApprovalStatus @default(PENDING)
+  requestedById String?
+  requestedBy   User?          @relation("RefundRequestedBy", fields: [requestedById], references: [id])
+  approvedById  String?
+  approvedBy    User?          @relation("RefundApprovedBy", fields: [approvedById], references: [id])
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("refunds")
+}
+
+model Discount {
+  id           String         @id @default(cuid())
+  saleId       String
+  sale         Sale           @relation(fields: [saleId], references: [id])
+  amount       Decimal        @db.Decimal(10, 2)
+  reason       String
+  status       ApprovalStatus @default(PENDING)
+  approvedById String?
+  approvedBy   User?          @relation("DiscountApprovedBy", fields: [approvedById], references: [id])
+  createdAt    DateTime       @default(now())
+
+  @@map("discounts")
+}
+
+model DailyClosingReport {
+  id               String        @id @default(cuid())
+  businessDate     DateTime      @unique @db.Date
+  totalSales        Decimal       @db.Decimal(10, 2)
+  expectedCash      Decimal       @db.Decimal(10, 2)
+  actualCash        Decimal       @db.Decimal(10, 2)
+  cashVariance      Decimal       @db.Decimal(10, 2)
+  totalBills        Int
+  paymentBreakdown  Json
+  notes             String?
+  closedById        String?
+  closedBy          User?         @relation("ClosingCreatedBy", fields: [closedById], references: [id])
+  createdAt         DateTime      @default(now())
+
+  @@map("daily_closing_reports")
+}
+
+model DocumentSequence {
+  id           String   @id @default(cuid())
+  documentType String
+  businessDate DateTime @db.Date
+  nextNumber   Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([documentType, businessDate])
+  @@map("document_sequences")
+}
+
+model AppSetting {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("app_settings")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  action      String
+  entity      String
+  entityId    String?
+  description String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@map("audit_logs")
+}
