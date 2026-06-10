@@ -1,5 +1,9 @@
 import type { ReactNode } from "react";
 
+/**
+ * Renders the reusable page header section of the user interface from the information supplied by its
+ * parent screen.
+ */
 export function PageHeader({
   eyebrow,
   title,

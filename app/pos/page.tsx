@@ -8,6 +8,9 @@ import { getRestaurantSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Loads the information needed for the pos screen and renders the page for the signed-in user.
+ */
 export default async function PosPage() {
   const session = await getCurrentSession();
   const settings = await getRestaurantSettings();

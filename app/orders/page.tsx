@@ -7,6 +7,9 @@ import { getOrderTickets } from "@/lib/order-report";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Loads the information needed for the orders screen and renders the page for the signed-in user.
+ */
 export default async function OrdersPage() {
   const orderTickets = await getOrderTickets();
   const readyTickets = orderTickets.filter((ticket) => ticket.status === "Ready").length;

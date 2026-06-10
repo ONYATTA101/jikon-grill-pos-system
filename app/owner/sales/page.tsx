@@ -10,6 +10,9 @@ import { getSalesHistory } from "@/lib/sales-report";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Loads the information needed for the owner sales screen and renders the page for the signed-in user.
+ */
 export default async function OwnerSalesPage() {
   const salesHistory = await getSalesHistory();
 

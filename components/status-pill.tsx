@@ -22,6 +22,10 @@ const statusStyles: Record<string, string> = {
   Rejected: "bg-red-500/10 text-red-700 ring-red-500/20"
 };
 
+/**
+ * Renders the reusable status pill section of the user interface from the information supplied by its
+ * parent screen.
+ */
 export function StatusPill({ status }: { status: string }) {
   return (
     <span

@@ -2,6 +2,9 @@ import { StockMovementType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import type { InventoryItem } from "@/lib/types";
 
+/**
+ * Calculates current inventory levels, stock values, and low-stock warnings for the inventory screens.
+ */
 export async function getInventoryReport(): Promise<InventoryItem[]> {
   const inventoryItems = await prisma.inventoryItem.findMany({
     include: {

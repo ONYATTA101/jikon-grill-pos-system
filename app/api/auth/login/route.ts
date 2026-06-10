@@ -5,6 +5,10 @@ import { verifyPassword } from "@/lib/password";
 import { createSessionToken, getRoleStart, sessionCookieName } from "@/lib/session";
 import type { Role } from "@/lib/types";
 
+/**
+ * Authenticates a username or email and password, rate-limits failures, and creates the secure login
+ * cookie on success.
+ */
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as { email?: string; password?: string } | null;
   const email = body?.email?.trim().toLowerCase();

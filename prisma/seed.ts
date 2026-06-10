@@ -9,6 +9,9 @@ import { hashPassword } from "../lib/password";
 const seedDatabaseUrl = process.env.DIRECT_URL || process.env.DATABASE_URL;
 const prisma = new PrismaClient(seedDatabaseUrl ? { datasources: { db: { url: seedDatabaseUrl } } } : undefined);
 
+/**
+ * Runs the seed maintenance task from start to finish and reports any failure before the script exits.
+ */
 async function main() {
   const roleSeeds = [
     {

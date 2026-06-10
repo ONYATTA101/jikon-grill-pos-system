@@ -17,6 +17,9 @@ const statusLabels: Record<PaymentStatus, "Paid" | "Unpaid" | "Refunded" | "Void
   VOIDED: "Voided"
 };
 
+/**
+ * Loads completed sales with their payments and staff details for sales-history screens and exports.
+ */
 export async function getSalesHistory() {
   const sales = await prisma.sale.findMany({
     include: {
@@ -60,6 +63,9 @@ export async function getSalesHistory() {
   }));
 }
 
+/**
+ * Calculates revenue, estimated cost, and profit figures for the owner's profit report.
+ */
 export async function getProfitRows() {
   const saleItems = await prisma.saleItem.findMany({
     include: {

@@ -1,6 +1,10 @@
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Renders the reusable metric card section of the user interface from the information supplied by its
+ * parent screen.
+ */
 export function MetricCard({
   title,
   value,

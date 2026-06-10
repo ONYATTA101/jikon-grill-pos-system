@@ -4,6 +4,9 @@ import { getAuthorizedSession } from "@/lib/current-session";
 import { prisma } from "@/lib/prisma";
 import { toProductView } from "@/lib/product-mapper";
 
+/**
+ * Returns all active products in the simplified format used by the POS terminal.
+ */
 export async function GET() {
   const session = await getAuthorizedSession(["OWNER", "MANAGER", "CASHIER", "WAITER"]);
   if (!session) {
@@ -24,6 +27,9 @@ export async function GET() {
   return NextResponse.json({ data: products.map(toProductView) });
 }
 
+/**
+ * Validates and creates a product, then records the change in the audit log.
+ */
 export async function POST(request: Request) {
   const session = await getAuthorizedSession(["OWNER", "MANAGER"]);
   if (!session) {

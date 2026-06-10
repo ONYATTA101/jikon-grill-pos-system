@@ -76,6 +76,10 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
   }
 ];
 
+/**
+ * Renders the reusable app shell client section of the user interface from the information supplied by
+ * its parent screen.
+ */
 export function AppShellClient({
   role,
   name,

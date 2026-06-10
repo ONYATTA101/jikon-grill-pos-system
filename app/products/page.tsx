@@ -9,6 +9,9 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Loads the information needed for the products screen and renders the page for the signed-in user.
+ */
 export default async function ProductsPage() {
   const products = (
     await prisma.product.findMany({

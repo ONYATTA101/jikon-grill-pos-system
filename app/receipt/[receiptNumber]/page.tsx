@@ -18,6 +18,9 @@ const paymentLabels: Record<string, string> = {
   SPLIT: "Split"
 };
 
+/**
+ * Loads the information needed for the receipt screen and renders the page for the signed-in user.
+ */
 export default async function ReceiptPage({ params }: { params: Promise<{ receiptNumber: string }> }) {
   const { receiptNumber } = await params;
   const settings = await getRestaurantSettings();

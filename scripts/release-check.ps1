@@ -1,11 +1,13 @@
 $ErrorActionPreference = "Stop"
 
+# Stops the release check immediately when the command that just ran returned an error.
 function Assert-LastExitCode([string]$step) {
   if ($LASTEXITCODE -ne 0) {
     throw "$step failed."
   }
 }
 
+# Reads one named setting from the private .env file without exposing the rest of the file.
 function Get-EnvValue([string]$name) {
   $line = Get-Content ".env" | Where-Object { $_ -match "^\s*$name\s*=" } | Select-Object -First 1
   if (-not $line) {

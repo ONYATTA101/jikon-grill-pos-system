@@ -2,6 +2,9 @@ import { BadgeCheck, Flame, Sparkles } from "lucide-react";
 import { LoginForm } from "@/components/login-form";
 import { ThemeToggle } from "@/components/theme-toggle";
 
+/**
+ * Loads the information needed for the login screen and renders the page for the signed-in user.
+ */
 export default function LoginPage() {
   return (
     <main className="min-h-screen app-surface px-4 py-8 text-zinc-950">

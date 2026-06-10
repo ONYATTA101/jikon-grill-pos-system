@@ -8,6 +8,10 @@ const prefixes: Record<DocumentType, string> = {
   RECEIPT: "JG"
 };
 
+/**
+ * Atomically reserves the next daily receipt or order number so two transactions cannot receive the
+ * same number.
+ */
 export async function getNextDocumentNumber(tx: TransactionClient, documentType: DocumentType, date = new Date()) {
   const businessDate = startOfBusinessDate(date);
   const sequence = await tx.documentSequence.upsert({
@@ -34,10 +38,16 @@ export async function getNextDocumentNumber(tx: TransactionClient, documentType:
   return `${prefixes[documentType]}-${formatBusinessDate(businessDate)}-${String(issuedNumber).padStart(4, "0")}`;
 }
 
+/**
+ * Returns midnight for a date so document-number sequences can restart each business day.
+ */
 function startOfBusinessDate(date: Date) {
   return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
 }
 
+/**
+ * Formats a business date as a compact YYYYMMDD section for receipt and order numbers.
+ */
 function formatBusinessDate(date: Date) {
   return `${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, "0")}${String(date.getUTCDate()).padStart(2, "0")}`;
 }

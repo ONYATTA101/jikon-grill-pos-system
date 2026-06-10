@@ -11,6 +11,10 @@ import { money } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Loads the information needed for the owner dashboard screen and renders the page for the signed-in
+ * user.
+ */
 export default async function OwnerDashboardPage() {
   const { businessDate, dailyClosing, lowStockItems, paymentSummary, profitSignal, salesSummary, topItems } = await getDashboardReport();
 

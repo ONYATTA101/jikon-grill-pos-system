@@ -318,6 +318,7 @@ flowchart LR
 
 ## 14. Related Documents
 
+- [FULL SYSTEM FUNCTION AND DATA FLOWCHART.md](FULL%20SYSTEM%20FUNCTION%20AND%20DATA%20FLOWCHART.md): Complete outside-to-inside map of named functions, processes, data transfers, deployment, and operations
 - [DOCUMENTATION.md](DOCUMENTATION.md): Complete operating, administration, setup, and delivery procedures
 - [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md): Before-opening and service-test checklist
 - [README.md](README.md): Quick start and command overview

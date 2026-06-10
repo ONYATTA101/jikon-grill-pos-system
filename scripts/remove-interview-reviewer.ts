@@ -1,5 +1,9 @@
 import { prisma } from "../lib/prisma";
 
+/**
+ * Runs the remove interview reviewer maintenance task from start to finish and reports any failure
+ * before the script exits.
+ */
 async function main() {
   if (process.argv[2] !== "REMOVE") {
     throw new Error("Removing interview access requires the REMOVE confirmation argument.");

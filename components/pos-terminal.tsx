@@ -42,6 +42,9 @@ const orderTypes: Array<{ label: "Table" | "Takeaway" | "Delivery"; icon: Lucide
   { label: "Delivery", icon: Truck }
 ];
 
+/**
+ * Chooses the visual color treatment used to identify a product's preparation station.
+ */
 function stationTone(station: Product["station"]) {
   if (station === "Kitchen") {
     return {
@@ -66,6 +69,10 @@ function stationTone(station: Product["station"]) {
   };
 }
 
+/**
+ * Renders the reusable pos terminal section of the user interface from the information supplied by its
+ * parent screen.
+ */
 export function PosTerminal({
   categories,
   products,
@@ -126,6 +133,9 @@ export function PosTerminal({
   const activeProductCount = products.filter((product) => product.active).length;
   const isPaid = billStatus === "Paid";
 
+  /**
+   * Adds a selected product to the current bill, or increases its quantity when it is already present.
+   */
   function addProduct(productId: string) {
     if (isPaid) {
       setLastAction("This bill is paid. Start a new bill to continue.");
@@ -152,6 +162,9 @@ export function PosTerminal({
     });
   }
 
+  /**
+   * Changes an item's quantity on the current bill while preventing invalid quantities.
+   */
   function updateQuantity(productId: string, delta: number) {
     if (isPaid) {
       setLastAction("This bill is paid. Start a new bill to continue.");
@@ -175,6 +188,9 @@ export function PosTerminal({
     );
   }
 
+  /**
+   * Removes one product completely from the current bill.
+   */
   function removeProduct(productId: string) {
     if (isPaid) {
       setLastAction("This bill is paid. Start a new bill to continue.");
@@ -194,6 +210,9 @@ export function PosTerminal({
     setCart((current) => current.filter((line) => line.productId !== productId));
   }
 
+  /**
+   * Clears the current bill and restores the POS controls to their starting state.
+   */
   function resetBill() {
     setCart([]);
     setDiscount(0);
@@ -206,6 +225,9 @@ export function PosTerminal({
     setActionStatus("info");
   }
 
+  /**
+   * Sends the current bill to the sales API for payment, then opens the completed receipt.
+   */
   async function payBill() {
     if (!lines.length || isPaying || isPaid || !canPay) return;
 
@@ -252,6 +274,9 @@ export function PosTerminal({
     }
   }
 
+  /**
+   * Sends the current dine-in or takeaway bill to the preparation workflow without taking payment yet.
+   */
   async function sendOrder() {
     if (!lines.length || isSending) return;
 

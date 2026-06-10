@@ -14,7 +14,13 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Loads the information needed for the closing screen and renders the page for the signed-in user.
+ */
 export default async function ClosingPage() {
+  /**
+   * Saves the manager's end-of-day cash count and notes together with the calculated closing totals.
+   */
   async function saveClosing(formData: FormData) {
     "use server";
 

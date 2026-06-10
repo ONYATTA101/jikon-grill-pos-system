@@ -17,6 +17,10 @@ const statusLabels: Record<ApprovalStatus, string> = {
   REJECTED: "Rejected"
 };
 
+/**
+ * Loads the information needed for the owner refunds screen and renders the page for the signed-in
+ * user.
+ */
 export default async function OwnerRefundsPage() {
   const refunds = await prisma.refund.findMany({
     include: {
@@ -111,6 +115,9 @@ export default async function OwnerRefundsPage() {
   );
 }
 
+/**
+ * Checks whether a refund record belongs to the current calendar day.
+ */
 function isToday(date: Date) {
   const now = new Date();
   return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() && date.getDate() === now.getDate();

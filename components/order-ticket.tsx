@@ -7,6 +7,10 @@ import { StatusPill } from "@/components/status-pill";
 import type { OrderTicket as OrderTicketType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+/**
+ * Renders the reusable order ticket section of the user interface from the information supplied by its
+ * parent screen.
+ */
 export function OrderTicket({
   ticket,
   actionMode = "station"
@@ -22,6 +26,10 @@ export function OrderTicket({
   const isReady = ticket.status === "Ready";
   const isServed = ticket.status === "Served";
 
+  /**
+   * Updates an order ticket's preparation status and refreshes the screen so the team sees the latest
+   * workflow state.
+   */
   async function updateStatus(status: "READY" | "SERVED") {
     if (!ticket.orderId) return;
 

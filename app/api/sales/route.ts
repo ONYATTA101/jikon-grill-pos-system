@@ -66,6 +66,9 @@ type SaleRequest = {
   reference: string | null;
 };
 
+/**
+ * Returns recent completed sales for authorized staff and owner screens.
+ */
 export async function GET() {
   const session = await getAuthorizedSession(["OWNER", "MANAGER", "CASHIER"]);
   if (!session) {
@@ -110,6 +113,10 @@ export async function GET() {
   });
 }
 
+/**
+ * Validates a bill, completes its payment inside one database transaction, deducts stock, and returns
+ * the receipt details.
+ */
 export async function POST(request: Request) {
   const session = await getAuthorizedSession(["OWNER", "MANAGER", "CASHIER"]);
   if (!session) {
@@ -144,6 +151,9 @@ export async function POST(request: Request) {
   }
 }
 
+/**
+ * Converts the submitted payment request into a validated internal sale request.
+ */
 function parseSaleRequest(body: Record<string, unknown>): SaleRequest {
   const items: SaleRequestItem[] = Array.isArray(body.items) ? body.items : [];
   const existingOrderId = typeof body.orderId === "string" && body.orderId ? body.orderId : null;
@@ -171,6 +181,9 @@ function parseSaleRequest(body: Record<string, unknown>): SaleRequest {
   };
 }
 
+/**
+ * Confirms that the staff member taking payment still has an active cashier account.
+ */
 async function getActiveCashier(userId: string) {
   const cashier = await prisma.user.findUnique({
     where: {
@@ -185,6 +198,9 @@ async function getActiveCashier(userId: string) {
   return cashier;
 }
 
+/**
+ * Loads and validates the products that can be charged for an existing order or a direct POS sale.
+ */
 async function getPayableSaleItems(saleRequest: SaleRequest) {
   if (saleRequest.existingOrderId) {
     return getExistingOrderSaleItems(saleRequest.existingOrderId);
@@ -196,6 +212,9 @@ async function getPayableSaleItems(saleRequest: SaleRequest) {
   };
 }
 
+/**
+ * Loads an unpaid order and converts its items into sale lines ready for payment.
+ */
 async function getExistingOrderSaleItems(existingOrderId: string) {
   const existingOrder = await prisma.order.findUnique({
     where: {
@@ -234,6 +253,9 @@ async function getExistingOrderSaleItems(existingOrderId: string) {
   };
 }
 
+/**
+ * Validates products selected directly in the POS and converts them into sale lines.
+ */
 async function getDirectSaleItems(items: SaleRequestItem[]) {
   const productIds = items.map((item) => String(item.productId));
   const products = await prisma.product.findMany({
@@ -270,6 +292,10 @@ async function getDirectSaleItems(items: SaleRequestItem[]) {
   return saleItems.filter((item): item is ValidSaleItem => Boolean(item));
 }
 
+/**
+ * Converts a product and quantity into the complete pricing and cost information required for a sale
+ * line.
+ */
 function toValidSaleItem(product: ProductForSale, quantity: number): ValidSaleItem {
   const unitPrice = Number(product.sellingPrice);
 
@@ -281,6 +307,9 @@ function toValidSaleItem(product: ProductForSale, quantity: number): ValidSaleIt
   };
 }
 
+/**
+ * Calculates subtotal, discount, tax, service charge, and final total for a sale.
+ */
 function getSaleTotals(saleItems: ValidSaleItem[], saleRequest: SaleRequest) {
   if (!saleItems.length) {
     throw new SaleError("No payable items were found.", 400);
@@ -297,6 +326,9 @@ function getSaleTotals(saleItems: ValidSaleItem[], saleRequest: SaleRequest) {
   };
 }
 
+/**
+ * Completes all database work for a paid sale as one transaction so partial sales cannot be saved.
+ */
 async function createPaidSale(
   tx: Prisma.TransactionClient,
   {
@@ -353,6 +385,9 @@ async function createPaidSale(
   return sale;
 }
 
+/**
+ * Finds or creates the table record needed for a paid dine-in sale.
+ */
 async function getOrCreatePaidTable(tx: Prisma.TransactionClient, orderType: OrderType, tableNumber: number | null) {
   if (orderType !== OrderType.TABLE || !tableNumber) return null;
 
@@ -371,6 +406,9 @@ async function getOrCreatePaidTable(tx: Prisma.TransactionClient, orderType: Ord
   });
 }
 
+/**
+ * Uses an existing order or creates a completed order to connect the payment with its ordered items.
+ */
 async function getOrCreatePaidOrder(
   tx: Prisma.TransactionClient,
   {
@@ -425,6 +463,9 @@ async function getOrCreatePaidOrder(
   });
 }
 
+/**
+ * Creates the permanent sale, line items, and payment records and assigns the next receipt number.
+ */
 async function createSaleRecord(
   tx: Prisma.TransactionClient,
   {
@@ -481,6 +522,10 @@ async function createSaleRecord(
   });
 }
 
+/**
+ * Deducts ingredients and tracked products from inventory after a sale and records each stock
+ * movement.
+ */
 async function deductStockForSale(
   tx: Prisma.TransactionClient,
   {
@@ -535,9 +580,15 @@ async function deductStockForSale(
   }
 }
 
+/**
+ * Combines all ingredient and direct-product quantities that must be removed from stock for a sale.
+ */
 async function getStockDeductions(tx: Prisma.TransactionClient, saleItems: ValidSaleItem[]) {
   const deductions = new Map<string, { name: string; quantity: number; reason: string }>();
 
+  /**
+   * Adds a required stock deduction to the running total for an inventory item.
+   */
   function addDeduction(inventoryItemId: string, name: string, quantity: number, reason: string) {
     const existing = deductions.get(inventoryItemId);
     deductions.set(inventoryItemId, {
@@ -577,6 +628,9 @@ async function getStockDeductions(tx: Prisma.TransactionClient, saleItems: Valid
   return deductions;
 }
 
+/**
+ * Records the completed sale in the audit log with enough detail for later review.
+ */
 async function createSaleAuditLog(
   tx: Prisma.TransactionClient,
   {
@@ -627,6 +681,9 @@ async function createSaleAuditLog(
   });
 }
 
+/**
+ * Converts the saved database sale into the concise receipt information returned to the POS.
+ */
 function toSaleResponse(sale: SaleWithPayment) {
   return {
     id: sale.id,
@@ -641,6 +698,10 @@ function toSaleResponse(sale: SaleWithPayment) {
   };
 }
 
+/**
+ * Turns known sale-processing errors into useful HTTP responses without exposing private server
+ * details.
+ */
 function toErrorResponse(error: unknown) {
   if (error instanceof SaleError) {
     return {
@@ -655,6 +716,9 @@ function toErrorResponse(error: unknown) {
   };
 }
 
+/**
+ * Converts submitted text into one of the payment methods supported by the POS.
+ */
 function toPaymentMethod(value: unknown) {
   const map: Record<string, PaymentMethod> = {
     Cash: PaymentMethod.CASH,
@@ -667,6 +731,9 @@ function toPaymentMethod(value: unknown) {
   return typeof value === "string" ? map[value] : null;
 }
 
+/**
+ * Converts submitted text into one of the order types supported by the POS.
+ */
 function toOrderType(value: unknown) {
   const map: Record<string, OrderType> = {
     Table: OrderType.TABLE,
@@ -677,13 +744,22 @@ function toOrderType(value: unknown) {
   return typeof value === "string" ? map[value] : null;
 }
 
+/**
+ * Validates an optional sale table number and converts it into a database-ready value.
+ */
 function parseTableNumber(value: unknown) {
   if (typeof value !== "string") return null;
   const match = value.match(/^Table\s+(\d+)$/i);
   return match ? Number(match[1]) : null;
 }
 
+/**
+ * Carries a safe staff-facing message and HTTP status when payment or sale processing cannot continue.
+ */
 class SaleError extends Error {
+  /**
+   * Creates a sale-processing error that the API can return without exposing private server details.
+   */
   constructor(
     message: string,
     public status: number

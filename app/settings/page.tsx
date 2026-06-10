@@ -11,8 +11,16 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Builds a return URL containing a success or error message so the page can explain the result of a
+ * saved form.
+ */
 const feedbackPath = (status: "success" | "error", message: string) => `/settings?status=${status}&message=${encodeURIComponent(message)}`;
 
+/**
+ * Validates and saves restaurant settings, records the change in the audit log, and refreshes affected
+ * screens.
+ */
 async function saveSettings(formData: FormData) {
   "use server";
 
@@ -45,6 +53,9 @@ async function saveSettings(formData: FormData) {
   redirect(feedbackPath("success", "Settings saved successfully."));
 }
 
+/**
+ * Loads the information needed for the settings screen and renders the page for the signed-in user.
+ */
 export default async function SettingsPage({
   searchParams
 }: {

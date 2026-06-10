@@ -6,6 +6,8 @@ Detailed operating, administration, setup, and delivery instructions are availab
 
 Project architecture and workflow diagrams are available in [PROJECT_FLOWCHART.md](PROJECT_FLOWCHART.md).
 
+The complete outside-to-inside function and data map is available in [FULL SYSTEM FUNCTION AND DATA FLOWCHART.md](FULL%20SYSTEM%20FUNCTION%20AND%20DATA%20FLOWCHART.md).
+
 The complete request, response, change, and reasoning record is available in [ALL PROMPTS PROCESSED.md](ALL%20PROMPTS%20PROCESSED.md).
 
 The interactive graphical system and data-transfer presentation is available in [SYSTEM GRAPHICAL PRESENTATION.html](SYSTEM%20GRAPHICAL%20PRESENTATION.html).

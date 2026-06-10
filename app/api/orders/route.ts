@@ -9,6 +9,10 @@ type OrderRequestItem = {
   quantity: number;
 };
 
+/**
+ * Validates a new order, creates its kitchen or bar items, reserves its table when needed, and records
+ * an audit entry.
+ */
 export async function POST(request: Request) {
   const session = await getAuthorizedSession(["OWNER", "MANAGER", "CASHIER", "WAITER"]);
   if (!session) {
@@ -139,6 +143,9 @@ export async function POST(request: Request) {
   );
 }
 
+/**
+ * Converts submitted text into one of the supported dine-in or takeaway order types.
+ */
 function toOrderType(value: unknown) {
   const map: Record<string, OrderType> = {
     Table: OrderType.TABLE,
@@ -149,6 +156,9 @@ function toOrderType(value: unknown) {
   return typeof value === "string" ? map[value] : null;
 }
 
+/**
+ * Validates an optional submitted table number and converts it into a database-ready value.
+ */
 function parseTableNumber(value: unknown) {
   if (typeof value !== "string") return null;
   const match = value.match(/^Table\s+(\d+)$/i);

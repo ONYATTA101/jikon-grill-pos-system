@@ -18,8 +18,16 @@ export const dynamic = "force-dynamic";
 const roleNames: Role[] = ["OWNER", "MANAGER", "CASHIER", "WAITER", "KITCHEN", "BARTENDER", "ADMIN"];
 const ownerOnlyRoles: Role[] = ["OWNER", "ADMIN"];
 const minimumPasswordLength = 8;
+/**
+ * Builds a return URL containing a success or error message so the page can explain the result of a
+ * saved form.
+ */
 const feedbackPath = (status: "success" | "error", message: string) => `/staff?status=${status}&message=${encodeURIComponent(message)}`;
 
+/**
+ * Validates a new staff account, securely hashes its password, saves it, and records the action for
+ * auditing.
+ */
 async function createStaff(formData: FormData) {
   "use server";
 
@@ -73,6 +81,9 @@ async function createStaff(formData: FormData) {
   redirect(feedbackPath("success", `${name} was added successfully.`));
 }
 
+/**
+ * Updates a staff member's role, status, or password and records the administrative change.
+ */
 async function updateStaff(formData: FormData) {
   "use server";
 
@@ -157,6 +168,9 @@ async function updateStaff(formData: FormData) {
   redirect(feedbackPath("success", password.length >= minimumPasswordLength ? `${name} was updated and password changed.` : `${name} was updated.`));
 }
 
+/**
+ * Loads the information needed for the staff screen and renders the page for the signed-in user.
+ */
 export default async function StaffPage({
   searchParams
 }: {

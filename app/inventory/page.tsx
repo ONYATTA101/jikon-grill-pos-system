@@ -8,6 +8,9 @@ import { getInventoryReport } from "@/lib/inventory-report";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Loads the information needed for the inventory screen and renders the page for the signed-in user.
+ */
 export default async function InventoryPage() {
   const inventoryItems = await getInventoryReport();
 

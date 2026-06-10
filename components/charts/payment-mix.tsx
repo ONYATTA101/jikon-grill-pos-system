@@ -2,6 +2,10 @@ import { money, percent } from "@/lib/format";
 
 const colors = ["bg-leaf-600", "bg-ember-600", "bg-zinc-950", "bg-sky-600", "bg-violet-600"];
 
+/**
+ * Renders the reusable payment mix section of the user interface from the information supplied by its
+ * parent screen.
+ */
 export function PaymentMix({ items }: { items: Array<{ method: string; amount: number }> }) {
   const total = items.reduce((sum, item) => sum + item.amount, 0) || 1;
 

@@ -3,6 +3,10 @@ import { OrderStatus, PaymentStatus, StockMovementType } from "@prisma/client";
 import { getAuthorizedSession } from "@/lib/current-session";
 import { prisma } from "@/lib/prisma";
 
+/**
+ * Voids an eligible sale, restores its stock, and records the reason and staff member in the audit
+ * log.
+ */
 export async function POST(request: Request, { params }: { params: Promise<{ saleId: string }> }) {
   const session = await getAuthorizedSession(["OWNER", "MANAGER"]);
   if (!session) {
@@ -139,7 +143,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ sal
   }
 }
 
+/**
+ * Carries a safe staff-facing message and HTTP status when a sale cannot be voided.
+ */
 class VoidSaleError extends Error {
+  /**
+   * Creates a void-sale error that the API can return without exposing private server details.
+   */
   constructor(
     message: string,
     public status: number

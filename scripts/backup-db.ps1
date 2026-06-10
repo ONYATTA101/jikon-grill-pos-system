@@ -4,6 +4,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Reads the private PostgreSQL connection URL from .env so the backup command can connect to the database.
 function Get-DatabaseUrl {
   $envPath = Join-Path (Get-Location) ".env"
   if (-not (Test-Path $envPath)) {
@@ -18,6 +19,7 @@ function Get-DatabaseUrl {
   return ($line -replace "^\s*DATABASE_URL\s*=\s*", "").Trim().Trim('"').Trim("'")
 }
 
+# Separates the PostgreSQL URL and schema name into the values required by pg_dump.
 function Get-PostgresConnection {
   $databaseUrl = Get-DatabaseUrl
   $uriBuilder = [System.UriBuilder]$databaseUrl
@@ -40,6 +42,7 @@ function Get-PostgresConnection {
   }
 }
 
+# Finds an installed PostgreSQL command-line tool either on PATH or in the standard Windows installation folder.
 function Get-PostgresTool([string]$toolName) {
   $command = Get-Command $toolName -ErrorAction SilentlyContinue
   if ($command) {

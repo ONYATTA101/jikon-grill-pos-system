@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   description: "Restaurant and bar POS system for Jikon Grill"
 };
 
+/**
+ * Renders the reusable root layout section of the user interface from the information supplied by its
+ * parent screen.
+ */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>

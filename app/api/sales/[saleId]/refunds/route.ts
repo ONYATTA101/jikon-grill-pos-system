@@ -3,6 +3,9 @@ import { ApprovalStatus, PaymentStatus } from "@prisma/client";
 import { getAuthorizedSession } from "@/lib/current-session";
 import { prisma } from "@/lib/prisma";
 
+/**
+ * Validates and submits a refund request for a completed sale.
+ */
 export async function POST(request: Request, { params }: { params: Promise<{ saleId: string }> }) {
   const session = await getAuthorizedSession(["OWNER", "MANAGER", "CASHIER"]);
   if (!session) {
@@ -95,7 +98,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ sal
   }
 }
 
+/**
+ * Carries a safe staff-facing message and HTTP status when a refund request cannot be submitted.
+ */
 class RefundError extends Error {
+  /**
+   * Creates a refund-request error that the API can return without exposing private server details.
+   */
   constructor(
     message: string,
     public status: number

@@ -6,6 +6,10 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Loads the information needed for the owner audit logs screen and renders the page for the signed-in
+ * user.
+ */
 export default async function OwnerAuditLogsPage() {
   const auditLogs = await prisma.auditLog.findMany({
     include: {

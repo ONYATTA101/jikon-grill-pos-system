@@ -19,6 +19,9 @@ const tableTones: Record<string, string> = {
   Paid: "border-l-leaf-500"
 };
 
+/**
+ * Works out the display status and active order for a restaurant table.
+ */
 function tableStatus(
   order?: {
     status: OrderStatus;
@@ -43,6 +46,9 @@ function tableStatus(
   return "Available";
 }
 
+/**
+ * Loads the information needed for the tables screen and renders the page for the signed-in user.
+ */
 export default async function TablesPage() {
   const tables = await prisma.restaurantTable.findMany({
     include: {

@@ -4,12 +4,20 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { LockKeyhole, Utensils } from "lucide-react";
 
+/**
+ * Renders the reusable login form section of the user interface from the information supplied by its
+ * parent screen.
+ */
 export function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Sends the entered username and password to the login API, displays any error, and opens the correct
+   * staff screen after success.
+   */
   async function submitLogin(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
     setError("");

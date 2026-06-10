@@ -12,6 +12,10 @@ const accounts = [
   ["Bartender", "bar@jikongrill.com"]
 ] as const;
 
+/**
+ * Runs the prepare launch credentials maintenance task from start to finish and reports any failure
+ * before the script exits.
+ */
 async function main() {
   if (process.argv[2] !== "ROTATE") {
     throw new Error("Password rotation requires the ROTATE confirmation argument.");

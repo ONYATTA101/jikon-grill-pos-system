@@ -1,6 +1,10 @@
 import { prisma } from "../lib/prisma";
 import { hashPassword } from "../lib/password";
 
+/**
+ * Runs the create interview reviewer maintenance task from start to finish and reports any failure
+ * before the script exits.
+ */
 async function main() {
   const email = process.env.INTERVIEW_REVIEW_EMAIL?.trim().toLowerCase();
   const password = process.env.INTERVIEW_REVIEW_PASSWORD;

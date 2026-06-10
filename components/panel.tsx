@@ -1,6 +1,10 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Renders the reusable panel section of the user interface from the information supplied by its parent
+ * screen.
+ */
 export function Panel({
   title,
   subtitle,

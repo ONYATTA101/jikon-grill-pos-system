@@ -4,10 +4,17 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X } from "lucide-react";
 
+/**
+ * Renders the reusable refund action buttons section of the user interface from the information
+ * supplied by its parent screen.
+ */
 export function RefundActionButtons({ refundId }: { refundId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState<"APPROVED" | "REJECTED" | null>(null);
 
+  /**
+   * Approves or rejects a pending refund request and refreshes the owner review screen.
+   */
   async function updateRefund(status: "APPROVED" | "REJECTED") {
     setLoading(status);
     try {

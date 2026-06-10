@@ -13,6 +13,9 @@ const statusLabels: Record<OrderStatus, OrderTicket["status"]> = {
   CANCELLED: "Voided"
 };
 
+/**
+ * Loads open order items and groups them into kitchen or bar tickets for preparation staff.
+ */
 export async function getOrderTickets(station?: "Kitchen" | "Bar"): Promise<OrderTicket[]> {
   const orders = await prisma.order.findMany({
     where: {
@@ -71,10 +74,16 @@ export async function getOrderTickets(station?: "Kitchen" | "Bar"): Promise<Orde
   });
 }
 
+/**
+ * Converts a database preparation-station value into the label displayed to staff.
+ */
 function stationToLabel(station: Station) {
   return station === Station.BAR ? "Bar" : "Kitchen";
 }
 
+/**
+ * Combines the statuses of all items on a ticket into one overall order-ticket status.
+ */
 function getTicketStatus(statuses: OrderStatus[]): OrderTicket["status"] {
   if (statuses.every((status) => status === OrderStatus.SERVED)) return "Served";
   if (statuses.every((status) => status === OrderStatus.READY)) return "Ready";
@@ -83,6 +92,9 @@ function getTicketStatus(statuses: OrderStatus[]): OrderTicket["status"] {
   return "Sent";
 }
 
+/**
+ * Shows how long an order has been waiting in a short, staff-friendly format.
+ */
 function formatAge(createdAt: Date) {
   const minutes = Math.max(Math.floor((Date.now() - createdAt.getTime()) / 60000), 0);
   if (minutes < 1) return "Just now";

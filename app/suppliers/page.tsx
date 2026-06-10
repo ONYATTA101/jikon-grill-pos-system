@@ -9,13 +9,23 @@ import { getAuthorizedSession } from "@/lib/current-session";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+/**
+ * Builds a return URL containing a success or error message so the page can explain the result of a
+ * saved form.
+ */
 const feedbackPath = (status: "success" | "error", message: string) => `/suppliers?status=${status}&message=${encodeURIComponent(message)}`;
 
+/**
+ * Loads the information needed for the suppliers screen and renders the page for the signed-in user.
+ */
 export default async function SuppliersPage({
   searchParams
 }: {
   searchParams?: { status?: string; message?: string };
 }) {
+  /**
+   * Validates and saves a supplier record, then reports whether the operation succeeded.
+   */
   async function saveSupplier(formData: FormData) {
     "use server";
 

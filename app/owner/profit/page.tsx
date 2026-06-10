@@ -8,6 +8,10 @@ import { getProfitRows } from "@/lib/sales-report";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Loads the information needed for the owner profit screen and renders the page for the signed-in
+ * user.
+ */
 export default async function OwnerProfitPage() {
   const profitRows = await getProfitRows();
   const totalProfit = profitRows.reduce((sum, row) => sum + row.totalProfit, 0);

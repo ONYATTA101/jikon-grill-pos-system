@@ -9,6 +9,10 @@ const paymentLabels: Record<PaymentMethod, string> = {
   SPLIT: "Split"
 };
 
+/**
+ * Builds the end-of-day closing summary from today's sales, payments, expenses, refunds, and voided
+ * transactions.
+ */
 export async function getClosingPreview() {
   const now = new Date();
   const businessDate = getBusinessDate(now);
@@ -79,6 +83,9 @@ export async function getClosingPreview() {
   };
 }
 
+/**
+ * Normalizes a date to the restaurant's business day so daily reports group records consistently.
+ */
 export function getBusinessDate(value = new Date()) {
   const businessDate = new Date(value);
   businessDate.setHours(0, 0, 0, 0);

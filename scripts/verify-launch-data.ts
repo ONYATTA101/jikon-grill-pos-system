@@ -20,6 +20,10 @@ const requiredStaff = [
   "bar@jikongrill.com"
 ];
 
+/**
+ * Runs the verify launch data maintenance task from start to finish and reports any failure before the
+ * script exits.
+ */
 async function main() {
   const [
     sales,

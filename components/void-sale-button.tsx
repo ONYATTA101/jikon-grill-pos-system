@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Ban } from "lucide-react";
 
+/**
+ * Renders the reusable void sale button section of the user interface from the information supplied by
+ * its parent screen.
+ */
 export function VoidSaleButton({
   saleId,
   receipt
@@ -14,6 +18,9 @@ export function VoidSaleButton({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Voids a completed sale after collecting a reason and refreshes the sales screen.
+   */
   async function voidSale() {
     const reason = window.prompt(`Reason for voiding ${receipt}?`);
     if (reason === null) return;

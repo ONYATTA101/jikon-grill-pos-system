@@ -6,6 +6,9 @@ import { getOrderTickets } from "@/lib/order-report";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Loads the information needed for the kitchen screen and renders the page for the signed-in user.
+ */
 export default async function KitchenPage() {
   const kitchenTickets = await getOrderTickets("Kitchen");
 

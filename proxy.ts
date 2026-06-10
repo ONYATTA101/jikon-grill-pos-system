@@ -43,6 +43,10 @@ const accessRules: Array<{ prefix: string; roles: Role[] }> = [
   { prefix: "/receipt", roles: ["OWNER", "MANAGER", "CASHIER"] }
 ];
 
+/**
+ * Converts the text-safe Base64 section of a session token back into bytes so its signature can be
+ * checked.
+ */
 function base64UrlToBytes(value: string) {
   const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
   const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
@@ -56,6 +60,10 @@ function base64UrlToBytes(value: string) {
   return bytes;
 }
 
+/**
+ * Converts signature bytes into text-safe Base64 so they can be compared with the signature stored in
+ * a session token.
+ */
 function bytesToBase64Url(bytes: ArrayBuffer) {
   let binary = "";
   const array = new Uint8Array(bytes);
@@ -67,6 +75,10 @@ function bytesToBase64Url(bytes: ArrayBuffer) {
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
 
+/**
+ * Creates a secure cryptographic signature for session-token data using the server's private session
+ * secret.
+ */
 async function sign(value: string) {
   const configuredSecret = process.env.NEXTAUTH_SECRET;
   const secret =
@@ -92,6 +104,10 @@ async function sign(value: string) {
   return bytesToBase64Url(signature);
 }
 
+/**
+ * Checks that a session token is authentic and unexpired, then returns the signed-in user's identity
+ * and role.
+ */
 async function verifySessionToken(token?: string | null): Promise<SessionPayload | null> {
   if (!token) return null;
 
@@ -113,10 +129,17 @@ async function verifySessionToken(token?: string | null): Promise<SessionPayload
   }
 }
 
+/**
+ * Finds the access-control rule that applies to the page URL a user is trying to open.
+ */
 function findRule(pathname: string) {
   return accessRules.find((rule) => pathname === rule.prefix || pathname.startsWith(`${rule.prefix}/`));
 }
 
+/**
+ * Protects restricted pages before they load by checking the user's session and role, then redirects
+ * unauthorized visitors.
+ */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (pathname.startsWith("/api/auth")) return NextResponse.next();

@@ -6,6 +6,9 @@ import { getOrderTickets } from "@/lib/order-report";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Loads the information needed for the bar screen and renders the page for the signed-in user.
+ */
 export default async function BarPage() {
   const barTickets = await getOrderTickets("Bar");
 

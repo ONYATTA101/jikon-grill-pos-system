@@ -1,5 +1,9 @@
 import { compactNumber, percent } from "@/lib/format";
 
+/**
+ * Renders the reusable bar list section of the user interface from the information supplied by its
+ * parent screen.
+ */
 export function BarList({
   items,
   valuePrefix = ""

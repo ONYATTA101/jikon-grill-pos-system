@@ -3,6 +3,10 @@ import { OrderStatus, Station } from "@prisma/client";
 import { getAuthorizedSession } from "@/lib/current-session";
 import { prisma } from "@/lib/prisma";
 
+/**
+ * Updates an order or preparation-station status while enforcing staff permissions and valid workflow
+ * transitions.
+ */
 export async function PATCH(request: Request, { params }: { params: Promise<{ orderId: string }> }) {
   const session = await getAuthorizedSession(["OWNER", "MANAGER", "KITCHEN", "BARTENDER", "WAITER", "CASHIER"]);
   if (!session) {
@@ -118,6 +122,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ or
   }
 }
 
+/**
+ * Converts submitted text into a supported order workflow status.
+ */
 function toOrderStatus(value: unknown) {
   if (value === OrderStatus.READY || value === OrderStatus.SERVED) {
     return value;
@@ -126,13 +133,22 @@ function toOrderStatus(value: unknown) {
   return null;
 }
 
+/**
+ * Converts submitted text into a supported kitchen or bar station.
+ */
 function toStation(value: unknown) {
   if (value === "Kitchen") return Station.KITCHEN;
   if (value === "Bar") return Station.BAR;
   return null;
 }
 
+/**
+ * Carries a safe staff-facing message and HTTP status when an order-ticket update cannot be completed.
+ */
 class TicketUpdateError extends Error {
+  /**
+   * Creates a ticket-update error that the API can turn into a clear response instead of a generic server error.
+   */
   constructor(
     message: string,
     public status: number

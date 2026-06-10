@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RotateCcw } from "lucide-react";
 
+/**
+ * Renders the reusable request refund button section of the user interface from the information
+ * supplied by its parent screen.
+ */
 export function RequestRefundButton({
   saleId,
   receipt,
@@ -16,6 +20,9 @@ export function RequestRefundButton({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Submits a refund request for a sale after collecting the amount and reason from the staff member.
+   */
   async function requestRefund() {
     const amountInput = window.prompt(`Refund amount for ${receipt}`, String(total));
     if (amountInput === null) return;

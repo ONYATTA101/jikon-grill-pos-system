@@ -676,3 +676,32 @@ npm run security:remove-reviewer
 3. Keep `.launch-credentials.txt`, `.env`, and database backups private.
 4. Continue daily closing and backup procedures.
 
+## 24. Plain-English Source Comments And Full System Flowchart
+
+### What Was Requested
+
+The source code needed comments above every function so a non-coder could understand each function's purpose and behavior. A complete graphical flowchart was also requested to show every major function, process, data transfer, and interaction inside and outside the system.
+
+### What Was Done
+
+- Added plain-English documentation immediately above every named TypeScript, React, and PowerShell function.
+- Documented API route handlers, page functions, reusable components, user-action handlers, server actions, shared business helpers, report functions, security functions, maintenance scripts, and custom error constructors.
+- Described the business purpose, important data changes, and returned result where those details help a non-coder follow the source.
+- Left tiny anonymous rendering and array callbacks represented by their named parent function so the code remains readable.
+- Created `FULL SYSTEM FUNCTION AND DATA FLOWCHART.md` with 13 graphical Mermaid diagrams.
+- Linked the new full-system map from the documentation index and the existing project flowchart.
+
+### Why These Changes Were Made
+
+The comments make the source code suitable for an interview walkthrough because a reviewer can understand why each named function exists before reading its implementation. The grouped diagrams provide both a complete system overview and focused views of authentication, orders, preparation, payment, inventory, refunds, reporting, deployment, database relationships, and backup/recovery.
+
+### Verification
+
+- Audited 172 named TypeScript/React functions and constructors: zero missing descriptions.
+- Audited 11 named PowerShell functions: zero missing descriptions.
+- Confirmed all 13 Mermaid flowchart blocks have balanced code fences.
+- Passed ESLint.
+- Passed Prisma schema validation.
+- Passed the production build.
+- Passed the Git whitespace check.
+- `npm audit --audit-level=high` reported zero vulnerabilities.

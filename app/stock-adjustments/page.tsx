@@ -19,13 +19,25 @@ const movementLabels: Record<StockMovementType, string> = {
   TRANSFER: "Transfer",
   RETURN: "Return"
 };
+/**
+ * Builds a return URL containing a success or error message so the page can explain the result of a
+ * saved form.
+ */
 const feedbackPath = (status: "success" | "error", message: string) => `/stock-adjustments?status=${status}&message=${encodeURIComponent(message)}`;
 
+/**
+ * Loads the information needed for the stock adjustments screen and renders the page for the signed-in
+ * user.
+ */
 export default async function StockAdjustmentsPage({
   searchParams
 }: {
   searchParams?: { status?: string; message?: string };
 }) {
+  /**
+   * Validates and records a stock adjustment, updates the item's available quantity, and creates an
+   * audit record.
+   */
   async function saveMovement(formData: FormData) {
     "use server";
 
@@ -207,6 +219,10 @@ export default async function StockAdjustmentsPage({
   );
 }
 
+/**
+ * Converts a stock movement into the positive or negative quantity change that should affect
+ * inventory.
+ */
 function normalizeMovementQuantity(movementType: StockMovementType, quantity: number) {
   const absoluteQuantity = Math.abs(quantity);
 

@@ -3,6 +3,10 @@ import { ApprovalStatus, PaymentStatus } from "@prisma/client";
 import { getAuthorizedSession } from "@/lib/current-session";
 import { prisma } from "@/lib/prisma";
 
+/**
+ * Approves or rejects a refund request, records the reviewer, and creates the required audit and stock
+ * updates.
+ */
 export async function PATCH(request: Request, { params }: { params: Promise<{ refundId: string }> }) {
   const session = await getAuthorizedSession(["OWNER", "MANAGER"]);
   if (!session) {
@@ -101,6 +105,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ re
   }
 }
 
+/**
+ * Converts submitted text into an allowed refund approval decision.
+ */
 function toApprovalStatus(value: unknown) {
   if (value === ApprovalStatus.APPROVED || value === ApprovalStatus.REJECTED) {
     return value;
@@ -109,7 +116,13 @@ function toApprovalStatus(value: unknown) {
   return null;
 }
 
+/**
+ * Carries a safe staff-facing message and HTTP status when a refund approval cannot be completed.
+ */
 class RefundApprovalError extends Error {
+  /**
+   * Creates a refund-approval error that the API can return without exposing private server details.
+   */
   constructor(
     message: string,
     public status: number

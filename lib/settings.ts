@@ -23,6 +23,10 @@ const defaults: RestaurantSettings = {
 
 const settingKeys = Object.keys(defaults) as Array<keyof RestaurantSettings>;
 
+/**
+ * Loads restaurant details, tax, service charge, and stock-warning settings, using defaults for
+ * missing values.
+ */
 export async function getRestaurantSettings(): Promise<RestaurantSettings> {
   const rows = await prisma.appSetting.findMany({
     where: {
@@ -44,6 +48,10 @@ export async function getRestaurantSettings(): Promise<RestaurantSettings> {
   };
 }
 
+/**
+ * Saves all restaurant settings together so receipts, pricing, and alerts use the latest
+ * configuration.
+ */
 export async function saveRestaurantSettings(settings: RestaurantSettings, tx: Prisma.TransactionClient = prisma) {
   await Promise.all(
     settingKeys.map((key) =>
@@ -56,6 +64,9 @@ export async function saveRestaurantSettings(settings: RestaurantSettings, tx: P
   );
 }
 
+/**
+ * Converts values submitted by the settings form into a validated restaurant-settings object.
+ */
 export function parseRestaurantSettings(formData: FormData): RestaurantSettings {
   return {
     restaurantName: cleanText(formData.get("restaurantName"), defaults.restaurantName),
@@ -68,16 +79,25 @@ export function parseRestaurantSettings(formData: FormData): RestaurantSettings 
   };
 }
 
+/**
+ * Returns trimmed form text, or a safe fallback when the field was left empty.
+ */
 function cleanText(value: FormDataEntryValue | null, fallback: string) {
   const text = String(value ?? "").trim();
   return text || fallback;
 }
 
+/**
+ * Converts an unknown value into a usable number, falling back when conversion is not possible.
+ */
 function toNumber(value: unknown, fallback: number) {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
 }
 
+/**
+ * Keeps a numeric setting between its permitted minimum and maximum values.
+ */
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }

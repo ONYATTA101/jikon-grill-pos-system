@@ -16,6 +16,10 @@ const reports = [
   ["Stock variance", "Expected stock compared with physical count"]
 ];
 
+/**
+ * Loads the information needed for the owner reports screen and renders the page for the signed-in
+ * user.
+ */
 export default function OwnerReportsPage() {
   return (
     <AppShell role="OWNER">

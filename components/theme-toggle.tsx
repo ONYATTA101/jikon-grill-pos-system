@@ -5,6 +5,9 @@ import { Moon, Sun } from "lucide-react";
 
 type Theme = "light" | "dark";
 
+/**
+ * Reads the visitor's saved light-or-dark preference, falling back to the device preference.
+ */
 function getStoredTheme(): Theme {
   if (typeof window === "undefined") return "light";
   const stored = window.localStorage.getItem("jikon-theme");
@@ -13,12 +16,19 @@ function getStoredTheme(): Theme {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+/**
+ * Applies the selected color theme to the page and stores the choice for future visits.
+ */
 function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
   document.documentElement.style.colorScheme = theme;
   window.localStorage.setItem("jikon-theme", theme);
 }
 
+/**
+ * Renders the reusable theme toggle section of the user interface from the information supplied by its
+ * parent screen.
+ */
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>(getStoredTheme);
 
@@ -26,6 +36,9 @@ export function ThemeToggle() {
     applyTheme(theme);
   }, [theme]);
 
+  /**
+   * Switches the interface between light and dark mode.
+   */
   function toggleTheme() {
     setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"));
   }

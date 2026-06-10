@@ -5,12 +5,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Confirms that a required program is installed and gives the operator a useful setup message when it is missing.
 function Assert-Command([string]$commandName, [string]$helpText) {
   if (-not (Get-Command $commandName -ErrorAction SilentlyContinue)) {
     throw "$commandName was not found. $helpText"
   }
 }
 
+# Stops any existing application process using the requested port so the POS can start without a port conflict.
 function Stop-Port([int]$port) {
   Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue |
     Where-Object { $_.OwningProcess -gt 0 } |
@@ -19,6 +21,7 @@ function Stop-Port([int]$port) {
     }
 }
 
+# Safely removes only this project's generated Next.js cache before a fresh production build.
 function Clear-NextCache {
   $project = Resolve-Path "."
   $next = Resolve-Path ".\.next" -ErrorAction SilentlyContinue

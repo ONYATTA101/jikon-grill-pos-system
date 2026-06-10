@@ -7,6 +7,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Reads the private PostgreSQL connection URL from .env so the restore command can connect to the database.
 function Get-DatabaseUrl {
   $envPath = Join-Path (Get-Location) ".env"
   if (-not (Test-Path $envPath)) {
@@ -21,6 +22,7 @@ function Get-DatabaseUrl {
   return ($line -replace "^\s*DATABASE_URL\s*=\s*", "").Trim().Trim('"').Trim("'")
 }
 
+# Removes unsupported query options from the connection URL before passing it to pg_restore.
 function Get-PostgresConnection {
   $databaseUrl = Get-DatabaseUrl
   $uriBuilder = [System.UriBuilder]$databaseUrl
@@ -34,6 +36,7 @@ function Get-PostgresConnection {
   }
 }
 
+# Finds an installed PostgreSQL command-line tool either on PATH or in the standard Windows installation folder.
 function Get-PostgresTool([string]$toolName) {
   $command = Get-Command $toolName -ErrorAction SilentlyContinue
   if ($command) {

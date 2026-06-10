@@ -17,6 +17,9 @@ export type ProductWithCategory = PrismaProduct & {
   category: Pick<Category, "name">;
 };
 
+/**
+ * Converts a database product record into the simpler product shape used by the POS interface.
+ */
 export function toProductView(product: ProductWithCategory): Product {
   return {
     id: product.id,

@@ -10,6 +10,9 @@ const paymentLabels: Record<PaymentMethod, string> = {
   SPLIT: "Split"
 };
 
+/**
+ * Collects the live sales, order, stock, and payment figures shown on the manager dashboard.
+ */
 export async function getDashboardReport() {
   const now = new Date();
   const startOfDay = new Date(now);

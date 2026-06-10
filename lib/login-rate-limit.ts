@@ -15,6 +15,9 @@ const globalForLoginAttempts = globalThis as unknown as {
 const loginAttempts = globalForLoginAttempts.loginAttempts ?? new Map<string, LoginAttempt>();
 globalForLoginAttempts.loginAttempts = loginAttempts;
 
+/**
+ * Checks recent failed login attempts and temporarily blocks repeated password guessing.
+ */
 export function checkLoginAllowed(key: string) {
   const now = Date.now();
   const attempt = loginAttempts.get(key);
@@ -34,6 +37,9 @@ export function checkLoginAllowed(key: string) {
   return { allowed: true, retryAfterSeconds: 0 };
 }
 
+/**
+ * Records a failed login attempt and increases the temporary lockout delay when necessary.
+ */
 export function recordLoginFailure(key: string) {
   const now = Date.now();
   const current = loginAttempts.get(key);
@@ -54,6 +60,9 @@ export function recordLoginFailure(key: string) {
   loginAttempts.set(key, attempt);
 }
 
+/**
+ * Clears failed-attempt history after a user signs in successfully.
+ */
 export function clearLoginFailures(key: string) {
   loginAttempts.delete(key);
 }

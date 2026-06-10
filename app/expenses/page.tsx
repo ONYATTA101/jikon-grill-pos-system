@@ -28,13 +28,24 @@ const paymentLabels: Record<PaymentMethod, string> = {
 };
 
 export const dynamic = "force-dynamic";
+/**
+ * Builds a return URL containing a success or error message so the page can explain the result of a
+ * saved form.
+ */
 const feedbackPath = (status: "success" | "error", message: string) => `/expenses?status=${status}&message=${encodeURIComponent(message)}`;
 
+/**
+ * Loads the information needed for the expenses screen and renders the page for the signed-in user.
+ */
 export default async function ExpensesPage({
   searchParams
 }: {
   searchParams?: { status?: string; message?: string };
 }) {
+  /**
+   * Validates and saves a new business expense, records who entered it, and returns a clear success or
+   * error message.
+   */
   async function saveExpense(formData: FormData) {
     "use server";
 

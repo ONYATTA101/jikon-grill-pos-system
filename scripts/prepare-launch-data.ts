@@ -11,6 +11,10 @@ const inventoryBaseline = {
   Serviettes: 16
 } as const;
 
+/**
+ * Runs the prepare launch data maintenance task from start to finish and reports any failure before
+ * the script exits.
+ */
 async function main() {
   if (process.argv[2] !== "CLEAN") {
     throw new Error("Launch data cleanup requires the CLEAN confirmation argument.");

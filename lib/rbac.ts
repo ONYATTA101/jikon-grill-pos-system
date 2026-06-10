@@ -29,6 +29,9 @@ export const permissions: Record<Role, string[]> = {
   ADMIN: ["system:setup", "users:manage"]
 };
 
+/**
+ * Checks whether a staff role has a named permission before allowing an action or showing a control.
+ */
 export function hasPermission(role: Role, permission: string) {
   return permissions[role].includes(permission) || permissions[role].includes("reports:all");
 }

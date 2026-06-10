@@ -15,6 +15,10 @@ const icons = {
   info: Info
 };
 
+/**
+ * Renders the reusable feedback banner section of the user interface from the information supplied by
+ * its parent screen.
+ */
 export function FeedbackBanner({
   status = "info",
   message,
